@@ -20,6 +20,10 @@ namespace AABBRayCastTest
         float m_t = 0f;
         float m_dirX = 0f;
         float m_dirY = 0f;
+
+        float m_NormalX = 0f;
+        float m_NormalY = 0f;
+
         bool m_HasCollision = false;
         public void Render(Graphics g)
         {
@@ -35,6 +39,8 @@ namespace AABBRayCastTest
                     float y = m_StartPt.Y + m_dirY * m_t;
 
                     g.DrawEllipse(pen, x - 3, y - 3, 6, 6);
+
+                    g.DrawLine(pen, x, y, x + m_NormalX * 10, y + m_NormalY * 10);
                 }
             }
         }
@@ -77,13 +83,18 @@ namespace AABBRayCastTest
             float tymin = (bt - originY) * rcpY;
             float tymax= (bb - originY) * rcpY;
 
-            if(dirX < 0f)
+            float singX = 1.0f;
+            float signY = 1.0f;
+
+            if (dirX < 0f)
             {
                 Swap(ref tmin, ref tmax);
+                singX = -1.0f;
             }
             if(dirY < 0f)
             {
                 Swap(ref tymin, ref tymax);
+                signY = -1.0f;
             }
 
             if ((tmin > tymax) || (tymin > tmax))
@@ -91,9 +102,24 @@ namespace AABBRayCastTest
                 return;
             }
             if (tymin > tmin)
+            {
+                m_NormalY = -signY ;
+                m_NormalX = 0.0f;
+
                 tmin = tymin;
+            }
+            else
+            {
+                m_NormalX = -singX;
+                m_NormalY = 0.0f;
+            }
+
             if (tymax < tmax)
+            {
+
                 tmax = tymax;
+
+            }
 
             m_t = tmin;
             m_HasCollision = true;
